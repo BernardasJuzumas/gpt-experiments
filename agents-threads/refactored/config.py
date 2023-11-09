@@ -18,5 +18,6 @@ SEED = 421
 DEBUG = True  # While deploying to production, this should be set to False
 
 # Add more configs if needed
+P_PERSONA_MAKER="You output a cleverly crafted persona descriptions that will be used as a system parameter. You will be asked to describe a persona in a few sentences. The persona will be used to customize the AI's output to match the desired outcome."
 
 
