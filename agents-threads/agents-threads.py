@@ -1,6 +1,11 @@
 #Lets make an app prototype that creates two ai agents to converse in a single thread. Agents will be able to ask each other questions and answer them.
-
 from openai import OpenAI
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 client = OpenAI()
 
@@ -20,6 +25,8 @@ liberal =  client.beta.assistants.create(
 #create thread
 thread = client.beta.threads.create()
 
+print("Thread id: " + thread.id)
+
 #add message to thread
 message = client.beta.threads.messages.create(
     thread_id=thread.id,
@@ -33,7 +40,8 @@ run =  client.beta.threads.runs.create(
     assistant_id=conservative.id
 )
 
+print("Thread id: " + thread.id)
+
 print(run)
 
 
-#show thread
