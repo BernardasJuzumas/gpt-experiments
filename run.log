@@ -1,0 +1,21 @@
+2023-11-09 18:18:07,729 - assistant_manager - INFO - Assistant found: Conservative
+2023-11-09 18:18:08,179 - assistant_manager - INFO - Assistant found: Liberal
+2023-11-09 18:39:35,486 - conversation_manager - INFO - Retrieved existing thread: thread_Um3kxjgjpJRZynPggNcfFicL
+2023-11-09 18:39:36,039 - assistant_manager - INFO - Assistant found: Conservative
+2023-11-09 18:39:36,039 - assistant_manager - INFO - Assistant added 
+Name: Conservative; 
+model: gpt-4-1106-preview; 
+instructions: You rigorously, yet politely defend conservative family values and tradition. To previous messages that challenge your beliefs respond with response and challenge of your own.
+2023-11-09 18:39:36,457 - assistant_manager - INFO - Assistant found: Liberal
+2023-11-09 18:39:36,457 - assistant_manager - INFO - Assistant added 
+Name: Liberal; 
+model: gpt-4-1106-preview; 
+instructions: You rigorously, yet politely defend liberal values, freedom of choice and exploring yourself beyond realms of traditional culture. To previous messages that challenge your beliefs respond with response and challenge of your own.
+2023-11-09 18:39:37,532 - conversation_manager - INFO - Current run status: queued. Waiting 5 seconds.
+2023-11-09 18:39:42,866 - conversation_manager - INFO - Current run status: in_progress. Waiting 5 seconds.
+2023-11-09 18:39:48,186 - conversation_manager - INFO - Current run status: in_progress. Waiting 5 seconds.
+2023-11-09 18:39:53,489 - conversation_manager - INFO - Run Run(id='run_XlywDGU2eMfN3YmL1zgdlOjI', assistant_id='asst_HjJHLRdWzpQAm6SWWHjuAxgT', cancelled_at=None, completed_at=1699555188, created_at=1699555176, expires_at=None, failed_at=None, file_ids=[], instructions='You rigorously, yet politely defend conservative family values and tradition. To previous messages that challenge your beliefs respond with response and challenge of your own.', last_error=None, metadata={}, model='gpt-4-1106-preview', object='thread.run', required_action=None, started_at=1699555176, status='completed', thread_id='thread_Um3kxjgjpJRZynPggNcfFicL', tools=[]) with assistant asst_HjJHLRdWzpQAm6SWWHjuAxgT on a thread thread_Um3kxjgjpJRZynPggNcfFicL completed 
+2023-11-09 18:39:54,375 - conversation_manager - INFO - Current run status: queued. Waiting 5 seconds.
+2023-11-09 18:39:59,696 - conversation_manager - INFO - Current run status: in_progress. Waiting 5 seconds.
+2023-11-09 18:40:04,977 - conversation_manager - INFO - Current run status: in_progress. Waiting 5 seconds.
+2023-11-09 18:40:10,283 - conversation_manager - INFO - Run Run(id='run_PWhNCwq8CHdgVVOP0OLqvQqH', assistant_id='asst_1i8zBXau6OtLeppXzkgS4ErY', cancelled_at=None, completed_at=1699555206, created_at=1699555193, expires_at=None, failed_at=None, file_ids=[], instructions='You rigorously, yet politely defend liberal values, freedom of choice and exploring yourself beyond realms of traditional culture. To previous messages that challenge your beliefs respond with response and challenge of your own.', last_error=None, metadata={}, model='gpt-4-1106-preview', object='thread.run', required_action=None, started_at=1699555193, status='completed', thread_id='thread_Um3kxjgjpJRZynPggNcfFicL', tools=[]) with assistant asst_1i8zBXau6OtLeppXzkgS4ErY on a thread thread_Um3kxjgjpJRZynPggNcfFicL completed 

@@ -1,3 +1,234 @@
+Filename: ./agents-threads/refactored/assistant_manager.py
+Contents:
+from openai import OpenAI
+from models import Assistant
+from logger import Logger
+
+class AssistantManager:
+    def __init__(self, client=None):
+        self.client = client or OpenAI()  # Allow dependency injection of the OpenAI client for testing
+        self.logger = Logger(__name__)
+
+    def check_if_assistant_exists(self, name):
+            """
+            Check if an assistant with the given name exists in the OpenAI API.
+
+            Args:
+                name (str): The name of the assistant to check.
+
+            Returns:
+                Assistant or None: If an assistant with the given name exists, return an Assistant object
+                representing the assistant. Otherwise, return None.
+            """
+            matching_assistants = [
+                assistant for assistant in self.client.beta.assistants.list() 
+                if assistant.name == name
+            ]
+            if matching_assistants:
+                self.logger.info(f"Assistant found: {name}")
+                data = matching_assistants[0]
+                return Assistant(
+                    id=data.id,
+                    name=data.name,
+                    model=data.model,  # API response may not include model
+                    instructions=data.instructions  # API response may not include instructions
+                )
+            self.logger.info(f"Assistant NOT found: {name}")
+            return None
+
+    def create_assistant(self, name, model, instructions):
+        try:
+            assistant_data = self.client.beta.assistants.create(name=name, model=model, instructions=instructions)
+            self.logger.info(f"Assistant created: {name}")
+            return Assistant(
+                id=assistant_data.id,
+                name=assistant_data.name,
+                model=assistant_data.model,  # API response may not include model
+                instructions=assistant_data.instructions  # API response may not include instructions
+            )
+        except Exception as e:
+            self.logger.error(f"Error creating assistant: {e}")
+            raise
+
+    def get_or_create_assistant(self, name, model, instructions):
+        try:
+            assistant = self.check_if_assistant_exists(name)
+            if assistant is None:
+                assistant = self.create_assistant(name, model, instructions)
+            self.logger.info(f"Assistant added \nName: {name}; \nmodel: {model}; \ninstructions: {instructions}")
+            return assistant
+        except Exception as e:
+            self.logger.error(f"Error getting or creating assistant: {e}")
+            raise---------
+Filename: ./agents-threads/refactored/main.py
+Contents:
+from conversation_manager import ConversationManager
+
+def main():
+    """
+    Initializes the ConversationManager, runs the conversation process, closes the database connection, and outputs the messages in the conversation.
+    """
+    # Initialize the ConversationManager
+    manager = ConversationManager()
+
+    # Run the conversation process
+    messages = manager.run_conversation()
+
+    # Close the database connection
+    manager.close()
+
+    # Output the messages in the conversation
+    for message in messages:
+        print(f"{message.role}: {message.content}")
+        print("*********************************************")
+
+if __name__ == "__main__":
+    main()---------
+Filename: ./agents-threads/refactored/models.py
+Contents:
+from dataclasses import dataclass
+from datetime import datetime
+
+@dataclass
+class Message:
+    thread_id: str
+    role: str
+    content: str
+
+@dataclass
+class Thread:
+    id: str
+    created_at: datetime
+    messages: list[Message] = None
+
+    def add_message(self, message: Message):
+        if self.messages is None:
+            self.messages = []
+        self.messages.append(message)
+
+@dataclass
+class Assistant:
+    id: str
+    name: str
+    model: str
+    instructions: str
+
+@dataclass
+class Run:
+    id: str
+    thread_id: str
+    assistant_id: str
+    status: str---------
+Filename: ./agents-threads/refactored/logger.py
+Contents:
+import logging
+from config import DEBUG
+
+class Logger:
+    def __init__(self, name, level=logging.INFO, log_file='run.log'):
+        self.logger = logging.getLogger(name)
+        self.logger.setLevel(level)
+        self.formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+        self.log_file = log_file
+        self._setup_file_handler()
+        if DEBUG:
+            self._setup_console_handler()
+
+    def _setup_console_handler(self):
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(self.formatter)
+        self.logger.addHandler(console_handler)
+
+    def _setup_file_handler(self):
+        file_handler = logging.FileHandler(self.log_file)
+        file_handler.setFormatter(self.formatter)
+        self.logger.addHandler(file_handler)
+    
+    def info(self, message):
+        self.logger.info(message)
+    
+    def error(self, message):
+        self.logger.error(message)
+    
+    # Add more logging levels if needed---------
+Filename: ./agents-threads/refactored/config.py
+Contents:
+
+"""
+This module contains configuration settings for the OpenAI API key, database folder, thread message, and seed.
+"""
+
+import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
+
+# Configuration Settings
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+DATABASE_FOLDER = ".cache"
+THREAD_MESSAGE = "I'm 18 years old and about to finish the school. I'd like to take a gap year and travel around the world. My parents tell me not to waste time and go straight in to college. What do you think about that?"
+SEED = 421
+
+DEBUG = True  # While deploying to production, this should be set to False
+
+# Add more configs if needed
+
+
+---------
+Filename: ./agents-threads/refactored/db_manager.py
+Contents:
+import sqlite3
+from pathlib import Path
+from config import DATABASE_FOLDER, SEED
+
+class DBManager:
+    def __init__(self, seed):
+        self.seed = seed
+        self.conn = self.initialize_db()
+
+    @staticmethod
+    def cache_seed_directory(seed):
+        Path(f"{DATABASE_FOLDER}/{seed}").mkdir(parents=True, exist_ok=True)
+
+    def initialize_db(self):
+        self.cache_seed_directory(self.seed)
+        db_path = f"{DATABASE_FOLDER}/{self.seed}/log.db"
+        conn = sqlite3.connect(db_path)
+        conn.execute("""CREATE TABLE IF NOT EXISTS log (
+                        timestamp text,
+                        thread_id text,
+                        run_id text,
+                        assistant_id text
+                    )""")
+        return conn
+
+    def execute(self, query, params=None):
+        with self.conn as connection:
+            cursor = connection.cursor()
+            result = cursor.execute(query, params or ())
+            return result.fetchall()
+
+    def close(self):
+        self.conn.close()
+    def get_last_thread_and_run_id(self):
+        query = """
+            SELECT thread_id, run_id 
+            FROM log 
+            ORDER BY timestamp DESC 
+            LIMIT 1;
+        """
+        result = self.execute(query)
+        return result[0] if result else (None, None)
+
+
+# Add more database-related functions if needed
+
+
+---------
+Filename: ./agents-threads/refactored/conversation_manager.py
+Contents:
 
 
 """
@@ -202,4 +433,4 @@ class ConversationManager:
             raise
 
 
-# ... rest of the code
+# ... rest of the code---------

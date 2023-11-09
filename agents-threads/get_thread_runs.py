@@ -20,3 +20,5 @@ for thread_run in thread_runs:
 
     for thread_run_step in thread_runs:
         print("Step: "+thread_run_step.id+"; Status: "+thread_run_step.status)
+
+

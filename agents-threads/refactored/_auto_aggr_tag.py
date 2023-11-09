@@ -1,0 +1,1 @@
+#source: find ./agents-threads/refactored/ -name "*.py" -exec bash -c 'echo "Filename: $1"; echo "Contents:"; cat $1; echo "---------"' _ {} \; > output_$(date +%Y%m%d).txt

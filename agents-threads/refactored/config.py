@@ -15,6 +15,8 @@ DATABASE_FOLDER = ".cache"
 THREAD_MESSAGE = "I'm 18 years old and about to finish the school. I'd like to take a gap year and travel around the world. My parents tell me not to waste time and go straight in to college. What do you think about that?"
 SEED = 421
 
+DEBUG = True  # While deploying to production, this should be set to False
+
 # Add more configs if needed
 
 
